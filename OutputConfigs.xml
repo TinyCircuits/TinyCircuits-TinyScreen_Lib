@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfOutputConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <OutputConfiguration>
+    <commentVariableName>true</commentVariableName>
+    <commentCharVisualizer>true</commentCharVisualizer>
+    <commentCharDescriptor>true</commentCharDescriptor>
+    <commentStyle>C</commentStyle>
+    <bmpVisualizerChar>#</bmpVisualizerChar>
+    <rotation>RotateNinety</rotation>
+    <flipHorizontal>false</flipHorizontal>
+    <flipVertical>false</flipVertical>
+    <paddingRemovalHorizontal>Fixed</paddingRemovalHorizontal>
+    <paddingRemovalVertical>Tighest</paddingRemovalVertical>
+    <lineWrap>AtColumn</lineWrap>
+    <bitLayout>ColumnMajor</bitLayout>
+    <byteOrder>LsbFirst</byteOrder>
+    <byteFormat>Hex</byteFormat>
+    <byteLeadingString>0x</byteLeadingString>
+    <generateLookupArray>true</generateLookupArray>
+    <descCharWidth>DisplayInBits</descCharWidth>
+    <descCharHeight>DontDisplay</descCharHeight>
+    <descFontHeight>DisplayInBits</descFontHeight>
+    <generateLookupBlocks>false</generateLookupBlocks>
+    <lookupBlocksNewAfterCharCount>80</lookupBlocksNewAfterCharCount>
+    <descImgWidth>DisplayInBits</descImgWidth>
+    <descImgHeight>DisplayInBits</descImgHeight>
+    <generateSpaceCharacterBitmap>true</generateSpaceCharacterBitmap>
+    <spaceGenerationPixels>4</spaceGenerationPixels>
+    <varNfBitmaps>static const unsigned char PROGMEM {0}Bitmaps</varNfBitmaps>
+    <varNfCharInfo>static const FONT_CHAR_INFO PROGMEM {0}Descriptors</varNfCharInfo>
+    <varNfFontInfo>static const FONT_INFO {0}FontInfo</varNfFontInfo>
+    <varNfWidth>const unsigned char {0}Width</varNfWidth>
+    <varNfHeight> const unsigned char {0}Height</varNfHeight>
+    <displayName>TinyScreenPreset</displayName>
+  </OutputConfiguration>
+</ArrayOfOutputConfiguration>
