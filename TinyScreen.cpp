@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 2 March 2015
+TinyScreen.cpp - Last modified 10 April 2015
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
