@@ -60,10 +60,10 @@ void TinyScreen::endTransfer(void) {
 }
 
 uint8_t TinyScreen::getButtons(void) {
-  Wire.beginTransmission(0x20);
+  Wire.beginTransmission(GPIO_ADDR+_addr);
   Wire.write(GPIO_RegData);
   Wire.endTransmission();
-  Wire.requestFrom(0x20,1);
+  Wire.requestFrom(GPIO_ADDR+_addr,1);
   uint8_t b=Wire.read();
   //buttons are active low and MSBs, so flip and shift
   return ((~b)>>4)&0x0F;
