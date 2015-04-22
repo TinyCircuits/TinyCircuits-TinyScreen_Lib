@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 10 April 2015
+TinyScreen.cpp - Last modified 2 March 2015
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -127,12 +127,12 @@ void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
 
 void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t color) 
 {
-  uint8_t r=(color&0x03)<<4;//two bits
-  uint8_t g=(color&0x1C)<<1;//three bits
-  uint8_t b=(color&0xE0)>>2;//three bits
-  if(r&0x10)r|=0x0F;//carry lsb
-  if(g&0x08)g|=0x07;//carry lsb
-  if(b&0x08)b|=0x07;//carry lsb
+  uint8_t r=(color)&0x03;//two bits
+  uint8_t g=(color>>2)&0x07;//three bits
+  uint8_t b=(color>>5)&0x07;//three bits
+  r|=(r<<4)|(r<<2);//copy to fill six bits
+  g|=g<<3;//copy to fill six bits
+  b|=b<<3;//copy to fill six bits
   drawRect(x,y,w,h,f,r,g,b);
 }
 
@@ -162,12 +162,12 @@ void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f,
 }
 
 void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t color) {
-  uint8_t r=(color&0x03)<<4;//two bits
-  uint8_t g=(color&0x1C)<<1;//three bits
-  uint8_t b=(color&0xE0)>>2;//three bits
-  if(r&0x10)r|=0x0F;//carry lsb
-  if(g&0x08)g|=0x07;//carry lsb
-  if(b&0x08)b|=0x07;//carry lsb
+  uint8_t r=(color)&0x03;//two bits
+  uint8_t g=(color>>2)&0x07;//three bits
+  uint8_t b=(color>>5)&0x07;//three bits
+  r|=(r<<4)|(r<<2);//copy to fill six bits
+  g|=g<<3;//copy to fill six bits
+  b|=b<<3;//copy to fill six bits
   drawLine(x0,y0,x1,y1,r,g,b);
 }
 
@@ -243,6 +243,8 @@ void TinyScreen::off(void) {
   startCommand();
   SPI.transfer(0xAE);//display off
   endTransfer();
+  writeGPIO(GPIO_RegData,~GPIO_SHDN);//bost converter off
+  //any other write will turn the boost converter back on
 }
 
 void TinyScreen::setBitDepth(uint8_t b){
@@ -281,10 +283,10 @@ void TinyScreen::writeRemap(void){
 
 void TinyScreen::begin(void) {
   //setup GPIO, reset SSD1331
-  writeGPIO(GPIO_RegData,~GPIO_RES);//reset low, CS/other pins high
+  writeGPIO(GPIO_RegData,~GPIO_RES);//reset low, other pins high
   writeGPIO(GPIO_RegDir,~GPIO_RES);//set reset to output
   delay(5);
-  writeGPIO(GPIO_RegDir,~(GPIO_CS|GPIO_DC));//reset to input, CS/DC output
+  writeGPIO(GPIO_RegDir,~(GPIO_CS|GPIO_DC|GPIO_SHDN));//reset to input, CS/DC/SHDN output
   writeGPIO(GPIO_RegPullUp,GPIO_BTN1|GPIO_BTN2|GPIO_BTN3|GPIO_BTN4);//button pullup enable
   //init SPI
   SPI.begin();
