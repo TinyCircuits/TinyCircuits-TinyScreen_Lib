@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 2 March 2015
+TinyScreen.cpp - Last modified 24 April 2015
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -243,6 +243,7 @@ void TinyScreen::off(void) {
   startCommand();
   SPI.transfer(0xAE);//display off
   endTransfer();
+  // GPIO_SHDN implemented in PCB Rev 5 and later
   writeGPIO(GPIO_RegData,~GPIO_SHDN);//bost converter off
   //any other write will turn the boost converter back on
 }

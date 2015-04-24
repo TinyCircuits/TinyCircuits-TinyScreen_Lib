@@ -1,5 +1,5 @@
 /*
-TinyScreen.h - Last modified 2 March 2015
+TinyScreen.h - Last modified 24 April 2015
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -22,16 +22,17 @@ The latest version of this library can be found at https://tiny-circuits.com/
 
 #include "Arduino.h"
 // GPIO Pins
-const uint8_t GPIO_DC = 0x01;
-const uint8_t GPIO_CS = 0x02;
-const uint8_t GPIO_RES = 0x08;
+const uint8_t GPIO_DC =   0x01;
+const uint8_t GPIO_CS =   0x02;
+const uint8_t GPIO_SHDN = 0x04;
+const uint8_t GPIO_RES =  0x08;
 const uint8_t GPIO_BTN1 = 0x10;
 const uint8_t GPIO_BTN2 = 0x20;
 const uint8_t GPIO_BTN3 = 0x40;
 const uint8_t GPIO_BTN4 = 0x80;
 const uint8_t GPIO_CMD_START = ~(GPIO_CS|GPIO_DC);
 const uint8_t GPIO_DATA_START = ~GPIO_CS;
-const uint8_t GPIO_TRANSFER_END = GPIO_CS;
+const uint8_t GPIO_TRANSFER_END = GPIO_CS|GPIO_SHDN;
 
 //GPIO Registers
 const uint8_t GPIO_RegData = 0x00;
