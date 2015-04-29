@@ -1,5 +1,5 @@
 /*
-TinyScreen.h - Last modified 24 April 2015
+TinyScreen.h - Last modified 28 April 2015
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

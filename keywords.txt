@@ -37,6 +37,7 @@ getButtons	KEYWORD2
 setFont	KEYWORD2
 setCursor	KEYWORD2
 fontColor	KEYWORD2
+setFlip	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
