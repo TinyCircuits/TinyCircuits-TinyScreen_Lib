@@ -1,3 +1,7 @@
+#ifndef TinyScreen_h
+#define TinyScreen_h
+
+
 /*
 TinyScreen.h - Last modified 28 April 2015
 
@@ -106,3 +110,5 @@ class TinyScreen : public Print {
   const FONT_CHAR_INFO* _fontDescriptor;
   const unsigned char* _fontBitmap;
 };
+
+#endif
