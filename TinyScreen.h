@@ -93,10 +93,10 @@ class TinyScreen : public Print {
   uint8_t getButtons(void);
   void writeGPIO(uint8_t, uint8_t);
   //font
-  void getStringMeasurements(const char *, char *, char *, char *);
   void setFont(const FONT_INFO&);
   void setCursor(uint8_t, uint8_t);
   void fontColor(uint8_t, uint8_t);
+  void getStringMeasurements(const uint8_t *, uint8_t *, uint8_t *, uint8_t *);
   virtual size_t write(uint8_t);
   
   static const uint8_t xMax=95;
