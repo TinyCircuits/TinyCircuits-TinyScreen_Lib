@@ -364,9 +364,10 @@ void TinyScreen::fontColor(uint8_t f, uint8_t g){
 
    it will return all zeros if str is null or font is undefined
 */
-void TinyScreen::getStringMeasurements(const uint8_t *str, uint8_t *strHt, uint8_t *strWd, uint8_t *strLen){
-  uint8_t ch,chWidth;
-  const uint8_t *begin;
+void TinyScreen::getStringMeasurements(const char *str, uint8_t *strHt, uint8_t *strWd, uint8_t *strLen){
+  uint8_t chWidth;
+  char ch;
+  const char *begin;
 
   *strHt=0;
   *strWd=0;
@@ -377,10 +378,10 @@ void TinyScreen::getStringMeasurements(const uint8_t *str, uint8_t *strHt, uint8
     *strHt=_fontHeight;
     while (ch=*str++)
     {
-      if(ch>=_fontFirstCh && ch<=_fontLastCh) strWd+=pgm_read_byte(&_fontDescriptor[ch-_fontFirstCh].width);
+      if(ch>=_fontFirstCh && ch<=_fontLastCh) *strWd+=pgm_read_byte(&_fontDescriptor[ch-_fontFirstCh].width);
     }
-    *strLen=str-begin;
-    if(strLen) strWd+=(*strLen-1); // 1 pixel between each char
+    *strLen=str-begin-1;
+    if(strLen) *strWd+=(*strLen-1); // 1 pixel between each char
   }
 }
 
