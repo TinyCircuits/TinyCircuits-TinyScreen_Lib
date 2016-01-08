@@ -357,6 +357,24 @@ void TinyScreen::fontColor(uint8_t f, uint8_t g){
   _fontBGcolor=g;
 }
 
+void TinyScreen::getStringMeasurements(const uint8_t *str, uint8_t *strHt, uint8_t *strWd, uint8_t *strLen)
+{
+  *strHt=0;
+  *strWd=0;
+  *strLen=0;
+  if (str)
+  {
+    strHt=_fontHeight;
+    while (ch=*str++)
+    {
+      strLen++;
+      strWd++; // 1 pixel spacing
+      uint8_t chWidth=pgm_read_byte(&_fontDescriptor[ch-_fontFirstCh].width);
+      strWd+=chWidth;
+    }
+  }
+}
+
 size_t TinyScreen::write(uint8_t ch){
   if(!_fontFirstCh)return 1;
   if(ch<_fontFirstCh || ch>_fontLastCh)return 1;
