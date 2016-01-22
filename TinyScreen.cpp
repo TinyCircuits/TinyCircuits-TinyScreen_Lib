@@ -41,7 +41,7 @@ void TinyScreen::writeGPIO(uint8_t regAddr, uint8_t regData)
   uint8_t oldTWBR=TWBR;
   TWBR=0;
   Wire.beginTransmission(GPIO_ADDR+_addr);
-  Wire.write(regAddr); 
+  Wire.write(regAddr);
   Wire.write(regData);
   Wire.endTransmission();
   TWBR=oldTWBR;
@@ -111,13 +111,13 @@ drawLine(x1, y1, x2, y2, 8bitcolor);//draw a line from (x1,y1) to (x2,y2) with a
 drawLine(x1, y1, x2, y2, red, green, blue);//like above, but uses 6 bit color values. Red and blue ignore the LSB.
 */
 
-void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {	
+void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
   if(x>xMax||y>yMax)return;
   uint8_t x2=x+w-1;
   uint8_t y2=y+h-1;
   if(x2>xMax)x2=xMax;
   if(y2>yMax)y2=yMax;
-  
+
   startCommand();
   SPI.transfer(0x25);//clear window
   SPI.transfer(x);SPI.transfer(y);
@@ -125,7 +125,7 @@ void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
   endTransfer();
 }
 
-void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t color) 
+void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t color)
 {
   uint8_t r=(color)&0x03;//two bits
   uint8_t g=(color>>2)&0x07;//three bits
@@ -136,21 +136,21 @@ void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f,
   drawRect(x,y,w,h,f,r,g,b);
 }
 
-void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t r, uint8_t g, uint8_t b) 
+void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t r, uint8_t g, uint8_t b)
 {
   if(x>xMax||y>yMax)return;
   uint8_t x2=x+w-1;
   uint8_t y2=y+h-1;
   if(x2>xMax)x2=xMax;
   if(y2>yMax)y2=yMax;
-  
+
   uint8_t fill=0;
   if(f)fill=1;
-  
+
   startCommand();
   SPI.transfer(0x26);//set fill
   SPI.transfer(fill);
-  
+
   SPI.transfer(0x22);//draw rectangle
   SPI.transfer(x);SPI.transfer(y);
   SPI.transfer(x2);SPI.transfer(y2);
@@ -171,7 +171,7 @@ void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_
   drawLine(x0,y0,x1,y1,r,g,b);
 }
 
-void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t r, uint8_t g, uint8_t b) {	
+void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t r, uint8_t g, uint8_t b) {
   if(x0>xMax)x0=xMax;
   if(y0>yMax)y0=yMax;
   if(x1>xMax)x1=xMax;
@@ -217,7 +217,7 @@ void TinyScreen::writeBuffer(uint8_t *buffer,int count) {
   while (!(SPSR & _BV(SPIF)));
 }
 
-/* 
+/*
 TinyScreen commands
 setBrightness(brightness);//sets main current level, valid levels are 0-15
 on();//turns display on
@@ -228,7 +228,7 @@ setMirror(mirror);//done in hardware on the SSD1331. boolean- 0 is normal, 1 is 
 */
 
 void TinyScreen::setBrightness(uint8_t brightness) {
-  if(brightness>15)brightness=15;  
+  if(brightness>15)brightness=15;
   startCommand();
   SPI.transfer(0x87);//set master current
   SPI.transfer(brightness);
@@ -357,6 +357,34 @@ void TinyScreen::fontColor(uint8_t f, uint8_t g){
   _fontBGcolor=g;
 }
 
+/* getStringMeasurements parses string and adds up the character widths; also
+   returns height (from font definition) and length in chars
+   the height and width are 8 bits because the screen itself is 64x96 and the
+   function is meant for strings that fit on one line
+
+   it will return all zeros if str is null or font is undefined
+*/
+void TinyScreen::getStringMeasurements(const char *str, uint8_t *strHt, uint8_t *strWd, uint8_t *strLen){
+  uint8_t chWidth;
+  char ch;
+  const char *begin;
+
+  *strHt=0;
+  *strWd=0;
+  *strLen=0;
+  begin=str;
+  if (_fontFirstCh && str)
+  {
+    *strHt=_fontHeight;
+    while (ch=*str++)
+    {
+      if(ch>=_fontFirstCh && ch<=_fontLastCh) *strWd+=pgm_read_byte(&_fontDescriptor[ch-_fontFirstCh].width);
+    }
+    *strLen=str-begin-1;
+    if(strLen) *strWd+=(*strLen-1); // 1 pixel between each char
+  }
+}
+
 size_t TinyScreen::write(uint8_t ch){
   if(!_fontFirstCh)return 1;
   if(ch<_fontFirstCh || ch>_fontLastCh)return 1;
@@ -366,10 +394,10 @@ size_t TinyScreen::write(uint8_t ch){
   if(chWidth>bytesPerRow*8)
     bytesPerRow++;
   uint16_t offset=pgm_read_word(&_fontDescriptor[ch-_fontFirstCh].offset)+(bytesPerRow*_fontHeight)-1;
-  
+
   setX(_cursorX,_cursorX+chWidth+1);
   setY(_cursorY,_cursorY+_fontHeight);
-  
+
   startData();
   for(uint8_t y=0; y<_fontHeight && y+_cursorY<yMax+1; y++){
     SPDR=_fontBGcolor;

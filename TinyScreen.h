@@ -49,8 +49,8 @@ typedef struct
 {
 	const uint8_t width;
 	const uint16_t offset;
-	
-} FONT_CHAR_INFO;	
+
+} FONT_CHAR_INFO;
 
 typedef struct
 {
@@ -59,8 +59,8 @@ typedef struct
 	const char endCh;
 	const FONT_CHAR_INFO*	charDesc;
 	const unsigned char* bitmap;
-		
-} FONT_INFO;	
+
+} FONT_INFO;
 
 #include <avr/pgmspace.h>
 #include "font.h"
@@ -100,12 +100,13 @@ class TinyScreen : public Print {
   void setFont(const FONT_INFO&);
   void setCursor(uint8_t, uint8_t);
   void fontColor(uint8_t, uint8_t);
+  void getStringMeasurements(const char *, uint8_t *, uint8_t *, uint8_t *);
   virtual size_t write(uint8_t);
-  
+
   static const uint8_t xMax=95;
   static const uint8_t yMax=63;
  private:
-  
+
   uint8_t _addr, _cursorX, _cursorY, _fontHeight, _fontFirstCh, _fontLastCh, _fontColor, _fontBGcolor, _bitDepth, _flipDisplay, _mirrorDisplay;
   const FONT_CHAR_INFO* _fontDescriptor;
   const unsigned char* _fontBitmap;
