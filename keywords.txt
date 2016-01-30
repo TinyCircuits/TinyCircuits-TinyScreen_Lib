@@ -19,16 +19,15 @@ startCommand	KEYWORD2
 endTransfer	KEYWORD2
 on	KEYWORD2
 off	KEYWORD2
-setFlip	KEYWORD2
-setMirror	KEYWORD2
-setBitDepth	KEYWORD2
-setColorMode	KEYWORD2
+setFlip KEYWORD2
+setMirror KEYWORD2
+setBitDepth KEYWORD2
+writeRemap	KEYWORD2
 setBrightness	KEYWORD2
 drawPixel	KEYWORD2
 drawLine	KEYWORD2
 drawRect	KEYWORD2
 clearWindow	KEYWORD2
-clearScreen	KEYWORD2
 writePixel	KEYWORD2
 writeBuffer	KEYWORD2
 setX	KEYWORD2
@@ -38,52 +37,9 @@ getButtons	KEYWORD2
 setFont	KEYWORD2
 setCursor	KEYWORD2
 fontColor	KEYWORD2
-setFont	KEYWORD2
-getFontHeight	KEYWORD2
-getPrintWidth	KEYWORD2
-initDMA	KEYWORD2
-getReadyStatusDMA	KEYWORD2
-writeBufferDMA	KEYWORD2
+setFlip	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-TinyScreenDefault	LITERAL1
-TinyScreenAlternate	LITERAL1
-TinyScreenPlus	LITERAL1
-TSRectangleFilled	LITERAL1
-TSRectangleNoFill	LITERAL1
-TSBitDepth8	LITERAL1
-TSBitDepth16	LITERAL1
-TSColorModeBGR	LITERAL1
-TSColorModeRGB	LITERAL1
-TSButtonUpperLeft	LITERAL1
-TSButtonUpperRight	LITERAL1
-TSButtonLowerLeft	LITERAL1
-TSButtonLowerRight	LITERAL1
-TS_8b_Black	LITERAL1
-TS_8b_Gray	LITERAL1
-TS_8b_White	LITERAL1
-TS_8b_Blue	LITERAL1
-TS_8b_DarkBlue	LITERAL1
-TS_8b_Red	LITERAL1
-TS_8b_DarkRed	LITERAL1
-TS_8b_Green	LITERAL1
-TS_8b_DarkGreen	LITERAL1
-TS_8b_Brown	LITERAL1
-TS_8b_DarkBrown	LITERAL1
-TS_8b_Yellow	LITERAL1
-TS_16b_Black	LITERAL1
-TS_16b_Gray	LITERAL1
-TS_16b_DarkGray	LITERAL1
-TS_16b_White	LITERAL1
-TS_16b_Blue	LITERAL1
-TS_16b_DarkBlue	LITERAL1
-TS_16b_Red	LITERAL1
-TS_16b_DarkRed	LITERAL1
-TS_16b_Green	LITERAL1
-TS_16b_DarkGreen	LITERAL1
-TS_16b_Brown	LITERAL1
-TS_16b_DarkBrown	LITERAL1
-TS_16b_Yellow	LITERAL1
