@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 29 January 2016
+TinyScreen.cpp - Last modified 2 February 2016
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -639,7 +639,9 @@ void DMAC_Handler() {
 #endif
 
 uint8_t TinyScreen::getReadyStatusDMA(){
+#if defined(ARDUINO_ARCH_SAMD)
   return dmaReady;
+#endif
 }
 
 void TinyScreen::writeBufferDMA(uint8_t *txdata,int n) {
