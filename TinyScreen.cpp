@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 2 February 2016
+TinyScreen.cpp - Last modified 11 February 2016
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -641,6 +641,9 @@ void DMAC_Handler() {
 uint8_t TinyScreen::getReadyStatusDMA(){
 #if defined(ARDUINO_ARCH_SAMD)
   return dmaReady;
+#else
+  //it's tough to raise an error about not having DMA in the IDE- try to fall back to regular software transfer
+  return 1;//always return ready
 #endif
 }
 
@@ -682,6 +685,9 @@ void TinyScreen::writeBufferDMA(uint8_t *txdata,int n) {
   
   //DMAC->CHID.reg = DMAC_CHID_ID(chnltx);   //disable DMA to allow lib SPI- necessary? needs to be done after completion
   //DMAC->CHCTRLA.reg &= ~DMAC_CHCTRLA_ENABLE;
+#else
+  //it's tough to raise an error about not having DMA in the IDE- try to fall back to regular software transfer
+  writeBuffer(txdata,n);//just write the data without DMA
 #endif
 }
 
@@ -695,5 +701,8 @@ void TinyScreen::initDMA(void){
   DMAC->BASEADDR.reg = (uint32_t)descriptor_section;
   DMAC->WRBADDR.reg = (uint32_t)wrb;
   DMAC->CTRL.reg = DMAC_CTRL_DMAENABLE | DMAC_CTRL_LVLEN(0xf);
+#else
+  //it's tough to raise an error about not having DMA in the IDE- try to fall back to regular software transfer
+  //ignore init
 #endif
 }
