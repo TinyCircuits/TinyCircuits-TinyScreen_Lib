@@ -23,7 +23,7 @@
 TinyScreen display = TinyScreen(TinyScreenPlus);
 
 //This is an example 17x12 pixel bitmap using TS library color definitions
-unsigned char flappyBirdBitmap[204]={
+const unsigned char flappyBirdBitmap[204]={
   TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Black,TS_8b_Black,TS_8b_Black,TS_8b_Black,TS_8b_Black,TS_8b_Black,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,
   TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Black,TS_8b_Black,TS_8b_White,TS_8b_White,TS_8b_White,TS_8b_Black,TS_8b_White,TS_8b_White,TS_8b_Black,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,
   TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,TS_8b_Black,TS_8b_White,TS_8b_White,TS_8b_Yellow,TS_8b_Yellow,TS_8b_Black,TS_8b_White,TS_8b_White,TS_8b_White,TS_8b_White,TS_8b_Black,TS_8b_Blue,TS_8b_Blue,TS_8b_Blue,

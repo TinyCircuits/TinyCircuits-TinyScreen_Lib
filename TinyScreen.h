@@ -159,7 +159,7 @@ class TinyScreen : public Print {
   void clearScreen(void);
   //basic graphics commands
   void writePixel(uint16_t);
-  void writeBuffer(uint8_t *, int);
+  void writeBuffer(const uint8_t *, int);
   void setX(uint8_t, uint8_t);
   void setY(uint8_t, uint8_t);
   void goTo(uint8_t x, uint8_t y);
