@@ -5,7 +5,7 @@
 //  This example shows the basic functionality of the TinyScreen library,
 //  including drawing, writing bitmaps, and printing text
 //
-//  Written by Ben Rose for TinyCircuits, https://tiny-circuits.com
+//  Written by Ben Rose for TinyCircuits, https://tinycircuits.com
 //
 //-------------------------------------------------------------------------------
 
