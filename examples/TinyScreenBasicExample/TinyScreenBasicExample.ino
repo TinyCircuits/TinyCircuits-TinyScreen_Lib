@@ -1,15 +1,15 @@
 /*
-	TinyScreen/TinyScreen+ Basic Example
+  TinyScreen/TinyScreen+ Basic Example
 
-	This example shows the basic functionality of the TinyScreen library,
-	including drawing, writing bitmaps, and printing text
+  This example shows the basic functionality of the TinyScreen library,
+  including drawing, writing bitmaps, and printing text
 
-	Written 26 January 2016
-	By Ben Rose
-	Modified 01 January 2019
-	By Hunter Hykes
+  Written 26 January 2016
+  By Ben Rose
+  Modified 01 January 2019
+  By Hunter Hykes
 
-	https://TinyCircuits.com
+  https://TinyCircuits.com
 */
 
 #include <Wire.h>
