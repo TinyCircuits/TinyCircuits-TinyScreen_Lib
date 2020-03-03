@@ -10,4 +10,4 @@ An example demonstrating and explaining most of the library functions is include
 * Declare TinyScreen as display, and use the correct board type(TinyScreenDefault, TinyScreenAlternate, TinyScreenPlus): TinyScreen display = TinyScreen(TinyScreenPlus);
 * TinyScreen library defaults to BGR colors, and this is what the TS_8b and TS_16b color definitions use. This can be changed with setColorMode(TSColorModeRGB);
 * Testing for a button press can now be done in a readable way, and works the same when the display is flipped: if (display.getButtons(TSButtonUpperLeft)) { };
-* TinyScreen+ supports DMA data transfers- check the end of TinySCreen.cpp
+* TinyScreen+ supports DMA data transfers- check the end of TinyScreen.cpp
