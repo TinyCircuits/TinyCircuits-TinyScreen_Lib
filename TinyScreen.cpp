@@ -313,7 +313,7 @@ void TinyScreen::writePixel(uint16_t color) {
   endTransfer();
 }
 
-void TinyScreen::writeBuffer(uint8_t *buffer,int count) {
+void TinyScreen::writeBuffer(const uint8_t *buffer,int count) {
   uint8_t temp;
   TS_SPI_SET_DATA_REG(buffer[0]);
   for(int j=1;j<count;j++){
