@@ -22,25 +22,24 @@ An example demonstrating and explaining most of the library functions is include
 * **void startCommand(void)**
 * **void endTransfer(void)**
 * **void begin(void)**
-* **void begin(uint8_t resetPin)**
 * **void on(void)**
 * **void off(void)**
 * **void setFlip(uint8_t)**
 * **void setMirror(uint8_t)**
 * **void setBitDepth(uint8_t)**
 * **void setBrightness(uint8_t)**
+* **void setColorMode(uint8_t)**
 * **void writeRemap(void)**
 
-### Built-In Drawing Commands
-
-* **void drawPixel(uint8_t, uint8_t, uint16_t)**
-* **void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)**
-* **void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint16_t)**
-* **void drawRect(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)**
-* **void drawRect(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint16_t)**
-* **void clearWindow(uint8_t, uint8_t, uint8_t, uint8_t)**
-
 ### Basic Graphic Commands
+
+* **void writePixel(uint16_t)**
+* **void writeBuffer(const uint8_t \*, int)**
+* **void setX(uint8_t, uint8_t)**
+* **void setY(uint8_t, uint8_t)**
+* **void goTo(uint8_t x, uint8_t y)**
+
+### Built-In Drawing Commands
 
 * **void drawPixel(uint8_t, uint8_t, uint16_t)**
 * **void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)**
@@ -60,6 +59,7 @@ An example demonstrating and explaining most of the library functions is include
 
 * **void setFont(void)**
 * **uint8_t getFontHeight(void)**
+* **uint8_t getFontHeight(const FONT_INFO&)**
 * **uint8_t getPrintWidth(char \*)**
 * **void setCursor(uint8_t, uint8_t)**
 * **void fontColor(uint16_t, uint16_t)**
