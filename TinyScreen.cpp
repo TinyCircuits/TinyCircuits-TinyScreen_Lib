@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 11 February 2016
+TinyScreen.cpp - Last modified 7 June 2021
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -75,7 +75,7 @@ void TinyScreen::writeGPIO(uint8_t regAddr, uint8_t regData)
   TWBR=0;
 #endif
   Wire.beginTransmission(GPIO_ADDR+_addr);
-  Wire.write(regAddr); 
+  Wire.write(regAddr);
   Wire.write(regData);
   Wire.endTransmission();
 #if defined(ARDUINO_ARCH_AVR)
@@ -185,13 +185,13 @@ drawLine(x1, y1, x2, y2, 16bitcolor);//draw a line from (x1,y1) to (x2,y2) with 
 drawLine(x1, y1, x2, y2, red, green, blue);//like above, but uses 6 bit color values. Red and blue ignore the LSB.
 */
 
-void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {  
+void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
   if(x>xMax||y>yMax)return;
   uint8_t x2=x+w-1;
   uint8_t y2=y+h-1;
   if(x2>xMax)x2=xMax;
   if(y2>yMax)y2=yMax;
-  
+
   startCommand();
   TSSPI->transfer(0x25);//clear window
   TSSPI->transfer(x);TSSPI->transfer(y);
@@ -206,21 +206,31 @@ void TinyScreen::clearScreen(){
   clearWindow(0,0,96,64);
 }
 
-void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t r, uint8_t g, uint8_t b) 
+void TinyScreen::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t f, uint8_t r, uint8_t g, uint8_t b)
 {
-  if(x>xMax||y>yMax)return;
+  if(x>xMax||y>yMax||(x+w)<=0||(y+h)<=0)return;
   uint8_t x2=x+w-1;
   uint8_t y2=y+h-1;
   if(x2>xMax)x2=xMax;
   if(y2>yMax)y2=yMax;
-  
+  if(x < 0)
+  {
+      x = 0;
+      w -= x;
+  }
+  if(y < 0)
+  {
+      y = 0;
+      h -= y;
+  }
+
   uint8_t fill=0;
   if(f)fill=1;
-  
+
   startCommand();
   TSSPI->transfer(0x26);//set fill
   TSSPI->transfer(fill);
-  
+
   TSSPI->transfer(0x22);//draw rectangle
   TSSPI->transfer(x);TSSPI->transfer(y);
   TSSPI->transfer(x2);TSSPI->transfer(y2);
@@ -234,7 +244,7 @@ void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f,
 #endif
 }
 
-void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f, uint16_t color) 
+void TinyScreen::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t f, uint16_t color)
 {
   uint16_t r,g,b;
   if(_bitDepth){
@@ -255,11 +265,56 @@ void TinyScreen::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t f,
   drawRect(x,y,w,h,f,r,g,b);
 }
 
-void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t r, uint8_t g, uint8_t b) {  
+//#define LINECLIP_FAST // Uncomment this for BAD, WRONG viewport clipping
+
+void TinyScreen::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t r, uint8_t g, uint8_t b) {
+#ifdef LINECLIP_FAST
   if(x0>xMax)x0=xMax;
   if(y0>yMax)y0=yMax;
   if(x1>xMax)x1=xMax;
   if(y1>yMax)y1=yMax;
+#else
+    if(x1 > xMax)
+    {
+        y1 = y0+(int32_t(y1-y0)*(xMax - x0))/(x1-x0);
+        x1 = xMax;
+    }
+    else if(x1 < 0)
+    {
+        y1 = y0+(int32_t(y1-y0)*(-x0))/(x1-x0);
+        x1 = 0;
+    }
+    if(y1 > yMax)
+    {
+        x1 = x0+(int32_t(x1-x0)*(yMax - y0))/(y1-y0);
+        y1 = yMax;
+    }
+    else if(y1 < 0)
+    {
+        x1 = x0+(int32_t(x1-x0)*(-y0))/(y1-y0);
+        y1 = 0;
+    }
+    if(x0 > xMax)
+    {
+        y0 = y1+(int32_t(y0-y1)*(xMax - x1))/(x0-x1);
+        x0 = xMax;
+    }
+    else if(x0 < 0)
+    {
+        y0 = y1+(int32_t(y0-y1)*(-x1))/(x0-x1);
+        x0 = 0;
+    }
+    if(y0 > yMax)
+    {
+        x0 = x1+(int32_t(x0-x1)*(yMax - y1))/(y0-y1);
+        y0 = yMax;
+    }
+    else if(y0 < 0)
+    {
+        x0 = x1+(int32_t(x0-x1)*(-y1))/(y0-y1);
+        y0 = 0;
+    }
+#endif
   startCommand();
   TSSPI->transfer(0x21);//draw line
   TSSPI->transfer(x0);TSSPI->transfer(y0);
@@ -271,7 +326,7 @@ void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_
 #endif
 }
 
-void TinyScreen::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint16_t color) {
+void TinyScreen::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) {
   uint16_t r,g,b;
   if(_bitDepth){
     r=(color)&0x1F;//five bits
@@ -313,7 +368,7 @@ void TinyScreen::writePixel(uint16_t color) {
   endTransfer();
 }
 
-void TinyScreen::writeBuffer(const uint8_t *buffer,int count) {
+void TinyScreen::writeBuffer(uint8_t *buffer,int count) {
   uint8_t temp;
   TS_SPI_SET_DATA_REG(buffer[0]);
   for(int j=1;j<count;j++){
@@ -324,7 +379,7 @@ void TinyScreen::writeBuffer(const uint8_t *buffer,int count) {
   TS_SPI_SEND_WAIT();
 }
 
-/* 
+/*
 TinyScreen commands
 setBrightness(brightness);//sets main current level, valid levels are 0-15
 on();//turns display on
@@ -335,7 +390,7 @@ setMirror(mirror);//done in hardware on the SSD1331. boolean- 0 is normal, 1 is 
 */
 
 void TinyScreen::setBrightness(uint8_t brightness) {
-  if(brightness>15)brightness=15;  
+  if(brightness>15)brightness=15;
   startCommand();
   TSSPI->transfer(0x87);//set master current
   TSSPI->transfer(brightness);
@@ -433,7 +488,7 @@ void TinyScreen::begin(void) {
     digitalWrite(TSP_PIN_RST,HIGH);
   }
   delay(10);
-  
+
   //datasheet SSD1331 init sequence
   const uint8_t init[32]={0xAE, 0xA1, 0x00, 0xA2, 0x00, 0xA4, 0xA8, 0x3F,
   0xAD, 0x8E, 0xB0, 0x0B, 0xB1, 0x31, 0xB3, 0xF0, 0x8A, 0x64, 0x8B,
@@ -472,7 +527,7 @@ TinyScreen::TinyScreen(uint8_t type){
   _mirrorDisplay=0;
   _colorMode=0;
   _type=type;
-  
+
   //type determines the SPI interface IO configuration
   if(_type==TinyScreenDefault){
     TSSPI=&SPI;
@@ -550,10 +605,10 @@ size_t TinyScreen::write(uint8_t ch){
   if(chWidth>bytesPerRow*8)
     bytesPerRow++;
   uint16_t offset=pgm_read_word(&_fontDescriptor[ch-_fontFirstCh].offset)+(bytesPerRow*_fontHeight)-1;
-  
+
   setX(_cursorX,_cursorX+chWidth+1);
   setY(_cursorY,_cursorY+_fontHeight);
-  
+
   startData();
   for(uint8_t y=0; y<_fontHeight && y+_cursorY<yMax+1; y++){
     if(_bitDepth){
@@ -650,10 +705,10 @@ uint8_t TinyScreen::getReadyStatusDMA(){
 void TinyScreen::writeBufferDMA(uint8_t *txdata,int n) {
 #if defined(ARDUINO_ARCH_SAMD)
   while(!dmaReady);
-  
+
   uint32_t temp_CHCTRLB_reg;
-  // set up transmit channel  
-  DMAC->CHID.reg = DMAC_CHID_ID(DMAchannel); 
+  // set up transmit channel
+  DMAC->CHID.reg = DMAC_CHID_ID(DMAchannel);
   DMAC->CHCTRLA.reg &= ~DMAC_CHCTRLA_ENABLE;
   DMAC->CHCTRLA.reg = DMAC_CHCTRLA_SWRST;
   DMAC->SWTRIGCTRL.reg &= (uint32_t)(~(1 << DMAchannel));
@@ -678,11 +733,11 @@ void TinyScreen::writeBufferDMA(uint8_t *txdata,int n) {
   memcpy(&descriptor_section[DMAchannel],&descriptor, sizeof(dmacdescriptor));
 
   dmaReady = false;
-  
+
   // start channel
   DMAC->CHID.reg = DMAC_CHID_ID(DMAchannel);
   DMAC->CHCTRLA.reg |= DMAC_CHCTRLA_ENABLE;
-  
+
   //DMAC->CHID.reg = DMAC_CHID_ID(chnltx);   //disable DMA to allow lib SPI- necessary? needs to be done after completion
   //DMAC->CHCTRLA.reg &= ~DMAC_CHCTRLA_ENABLE;
 #else
