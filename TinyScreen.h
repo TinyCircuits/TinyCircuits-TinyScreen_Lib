@@ -117,8 +117,8 @@ typedef struct
 {
 	const uint8_t width;
 	const uint16_t offset;
-	
-} FONT_CHAR_INFO;	
+
+} FONT_CHAR_INFO;
 
 typedef struct
 {
@@ -127,8 +127,8 @@ typedef struct
 	const char endCh;
 	const FONT_CHAR_INFO*	charDesc;
 	const unsigned char* bitmap;
-		
-} FONT_INFO;	
+
+} FONT_INFO;
 
 //#include <avr/pgmspace.h>
 #include "font.h"
@@ -151,15 +151,15 @@ class TinyScreen : public Print {
   void writeRemap(void);
   //accelerated drawing commands
   void drawPixel(uint8_t, uint8_t, uint16_t);
-  void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
-  void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint16_t);
-  void drawRect(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
-  void drawRect(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint16_t);
+  void drawLine(int16_t, int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t);
+  void drawLine(int16_t, int16_t, int16_t, int16_t, uint16_t);
+  void drawRect(int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
+  void drawRect(int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint16_t);
   void clearWindow(uint8_t, uint8_t, uint8_t, uint8_t);
   void clearScreen(void);
   //basic graphics commands
   void writePixel(uint16_t);
-  void writeBuffer(const uint8_t *, int);
+  void writeBuffer(uint8_t *, int);
   void setX(uint8_t, uint8_t);
   void setY(uint8_t, uint8_t);
   void goTo(uint8_t x, uint8_t y);
@@ -179,11 +179,11 @@ class TinyScreen : public Print {
   void initDMA(void);
   uint8_t getReadyStatusDMA(void);
   void writeBufferDMA(uint8_t *,int);
-  
+
   static const uint8_t xMax=95;
   static const uint8_t yMax=63;
  private:
-  
+
   uint8_t _addr, _cursorX, _cursorY, _fontHeight, _fontFirstCh, _fontLastCh, _bitDepth, _flipDisplay, _mirrorDisplay, _colorMode, _externalIO, _type;
   uint16_t  _fontColor, _fontBGcolor;
   const FONT_CHAR_INFO* _fontDescriptor;
