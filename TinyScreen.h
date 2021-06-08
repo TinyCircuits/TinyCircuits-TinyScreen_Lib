@@ -1,5 +1,5 @@
 /*
-TinyScreen.h - Last modified 11 February 2016
+TinyScreen.h - Last modified 8 June 2021
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -155,11 +155,17 @@ class TinyScreen : public Print {
   void drawLine(int16_t, int16_t, int16_t, int16_t, uint16_t);
   void drawRect(int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
   void drawRect(int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint16_t);
+  void drawHLine(int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t);
+  void drawHLine(int16_t, int16_t, int16_t, uint16_t);
+  void drawVLine(int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t);
+  void drawVLine(int16_t, int16_t, int16_t, uint16_t);
+  void drawTri(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint8_t);
+  void drawTri(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t, uint8_t, uint16_t);
   void clearWindow(uint8_t, uint8_t, uint8_t, uint8_t);
   void clearScreen(void);
   //basic graphics commands
   void writePixel(uint16_t);
-  void writeBuffer(uint8_t *, int);
+  void writeBuffer(const uint8_t *, int);
   void setX(uint8_t, uint8_t);
   void setY(uint8_t, uint8_t);
   void goTo(uint8_t x, uint8_t y);
