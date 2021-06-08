@@ -1,5 +1,5 @@
 /*
-TinyScreen.cpp - Last modified 7 June 2021
+TinyScreen.cpp - Last modified 8 June 2021
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -177,12 +177,18 @@ void TinyScreen::setY(uint8_t y, uint8_t end) {
 Hardware accelerated drawing functions:
 clearWindow(x start, y start, width, height);//clears specified OLED controller memory
 clearScreen();//clears entire screen
-drawRect(x stary, y start, width, height, fill, 8bitcolor);//sets specified OLED controller memory to an 8 bit color, fill is a boolean
-drawRect(x stary, y start, width, height, fill, 16bitcolor);//sets specified OLED controller memory to an 8 bit color, fill is a boolean
-drawRect(x stary, y start, width, height, fill, red, green, blue);//like above, but uses 6 bit color values. Red and blue ignore the LSB.
+drawRect(x start, y start, width, height, fill, 8bitcolor);//sets specified OLED controller memory to an 8 bit color, fill is a boolean
+drawRect(x start, y start, width, height, fill, 16bitcolor);//sets specified OLED controller memory to an 8 bit color, fill is a boolean
+drawRect(x start, y start, width, height, fill, red, green, blue);//like above, but uses 6 bit color values. Red and blue ignore the LSB.
 drawLine(x1, y1, x2, y2, 8bitcolor);//draw a line from (x1,y1) to (x2,y2) with an 8 bit color
 drawLine(x1, y1, x2, y2, 16bitcolor);//draw a line from (x1,y1) to (x2,y2) with an 16 bit color
 drawLine(x1, y1, x2, y2, red, green, blue);//like above, but uses 6 bit color values. Red and blue ignore the LSB.
+drawHLine(x1, x2, y, 8bitcolor);//draw a horizontal line from (x1, y) to (x2, y) with an 8 bit color
+drawHLine(x1, x2, y, 16bitcolor);//draw a horizontal line from (x1, y) to (x2, y) with a 16 bit color
+drawVLine(x, y1, y2, 8bitcolor);//draw a vertical line from (x, y1) to (x, y2) with an 8 bit color
+drawVLine(x, y1, y2, 16bitcolor);//draw a vertical line from (x, y1) to (x, y2) with a 16 bit color
+drawTri(x1, y1, x2, y2, x3, y3, fill, 8bitcolor)//raster a triangle formed by (x1, y1), (x2, y2), and (x3, y3) with an 8 bit color, fill is a boolean
+drawTri(x1, y1, x2, y2, x3, y3, fill, 16bitcolor)//raster a triangle formed by (x1, y1), (x2, y2), and (x3, y3) with a 16 bit color, fill is a boolean
 */
 
 void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
@@ -193,9 +199,13 @@ void TinyScreen::clearWindow(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
   if(y2>yMax)y2=yMax;
 
   startCommand();
+  /*
   TSSPI->transfer(0x25);//clear window
   TSSPI->transfer(x);TSSPI->transfer(y);
   TSSPI->transfer(x2);TSSPI->transfer(y2);
+  */
+  uint8_t cbuf[5] = {0x25, x, y, x2, y2};
+  TSSPI->transfer(cbuf, 5);
   endTransfer();
 #if TS_USE_DELAY
   delayMicroseconds(400);
@@ -228,6 +238,7 @@ void TinyScreen::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t f,
   if(f)fill=1;
 
   startCommand();
+  /* // Manual command transfer
   TSSPI->transfer(0x26);//set fill
   TSSPI->transfer(fill);
 
@@ -238,6 +249,9 @@ void TinyScreen::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t f,
   TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
   //fill
   TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
+  */
+  uint8_t cbuf[13] = {0x26, fill, 0x22, x, y, x2, y2, b, g, r, b, g, r};
+  writeBuffer(cbuf, 13);
   endTransfer();
 #if TS_USE_DELAY
   delayMicroseconds(400);
@@ -316,10 +330,14 @@ void TinyScreen::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_
     }
 #endif
   startCommand();
+    /* // Manual command transfer
   TSSPI->transfer(0x21);//draw line
   TSSPI->transfer(x0);TSSPI->transfer(y0);
   TSSPI->transfer(x1);TSSPI->transfer(y1);
   TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
+  */
+  uint8_t cbuf[8] = {0x21, x0, y0, x1, y1, b, g, r};
+  writeBuffer(cbuf, 8);
   endTransfer();
 #if TS_USE_DELAY
   delayMicroseconds(100);
@@ -346,6 +364,214 @@ void TinyScreen::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16
   drawLine(x0,y0,x1,y1,r,g,b);
 }
 
+// Just to keep things simple
+inline void iswap(int16_t& a, int16_t& b)
+{
+    a ^= b;
+    b ^= a;
+    a ^= b;
+}
+inline void iswap(int32_t& a, int32_t& b)
+{
+    a ^= b;
+    b ^= a;
+    a ^= b;
+}
+
+void TinyScreen::drawHLine(int16_t x0, int16_t x1, int16_t y, uint8_t r, uint8_t g, uint8_t b)
+{
+    if(y < 0 || y > yMax) return;
+    if(x0 > x1)
+    {
+        iswap(x0, x1);
+    }
+    if(x0 > xMax || x1 < 0) return;
+    startCommand();
+    /* // Manual command transfer
+    TSSPI->transfer(0x26);//set fill false
+    TSSPI->transfer(0);
+
+    TSSPI->transfer(0x22);// 1-wide rectangle
+    TSSPI->transfer(x0);TSSPI->transfer(y);
+    TSSPI->transfer(x1);TSSPI->transfer(y);
+    //outline & fill
+    TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
+    TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
+    */
+    uint8_t cbuf[13] = {0x26, 0, 0x22, x0, y, x1, y, b, g, r, b, g, r};
+    writeBuffer(cbuf, 13);
+    endTransfer();
+#if TS_USE_DELAY
+  delayMicroseconds(400);
+#endif
+}
+
+void TinyScreen::drawHLine(int16_t x0, int16_t x1, int16_t y, uint16_t color)
+{
+    uint16_t r,g,b;
+    if(_bitDepth){
+        r=(color)&0x1F;//five bits
+        g=(color>>5)&0x3F;//six bits
+        b=(color>>11)&0x1F;//five bits
+        r=r<<1;//shift to fill six bits
+        g=g<<0;//shift to fill six bits
+        b=b<<1;//shift to fill six bits
+    }else{
+        r=(color)&0x03;//two bits
+        g=(color>>2)&0x07;//three bits
+        b=(color>>5)&0x07;//three bits
+        r|=(r<<4)|(r<<2);//copy to fill six bits
+        g|=g<<3;//copy to fill six bits
+        b|=b<<3;//copy to fill six bits
+    }
+    drawHLine(x0, x1, y, r, g, b);
+}
+
+void TinyScreen::drawVLine(int16_t x, int16_t y0, int16_t y1, uint8_t r, uint8_t g, uint8_t b)
+{
+    if(x < 0 || x > xMax) return;
+    if(y0 > y1)
+    {
+        iswap(y0, y1);
+    }
+    if(y0 > yMax || y1 < 0) return;
+    startCommand();
+    /* // Manual command transfer
+    TSSPI->transfer(0x26);//set fill false
+    TSSPI->transfer(0);
+
+    TSSPI->transfer(0x22);// 1-wide rectangle
+    TSSPI->transfer(x);TSSPI->transfer(y0);
+    TSSPI->transfer(x);TSSPI->transfer(y1);
+    //outline
+    TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
+    //fill
+    TSSPI->transfer(b);TSSPI->transfer(g);TSSPI->transfer(r);
+    */
+    uint8_t cbuf[13] = {0x26, 0, 0x22, x, y0, x, y1, b, g, r, b, g, r};
+    writeBuffer(cbuf, 13);
+    endTransfer();
+#if TS_USE_DELAY
+  delayMicroseconds(400);
+#endif
+}
+
+void TinyScreen::drawVLine(int16_t x0, int16_t x1, int16_t y, uint16_t color)
+{
+    uint16_t r,g,b;
+    if(_bitDepth){
+        r=(color)&0x1F;//five bits
+        g=(color>>5)&0x3F;//six bits
+        b=(color>>11)&0x1F;//five bits
+        r=r<<1;//shift to fill six bits
+        g=g<<0;//shift to fill six bits
+        b=b<<1;//shift to fill six bits
+    }else{
+        r=(color)&0x03;//two bits
+        g=(color>>2)&0x07;//three bits
+        b=(color>>5)&0x07;//three bits
+        r|=(r<<4)|(r<<2);//copy to fill six bits
+        g|=g<<3;//copy to fill six bits
+        b|=b<<3;//copy to fill six bits
+    }
+    drawVLine(x0, x1, y, r, g, b);
+}
+
+void TinyScreen::drawTri(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t f, uint8_t r, uint8_t g, uint8_t b)
+{
+    if(f)
+    {
+        // Sort vertices ascending by y
+        if(y0 > y1)
+        {
+            iswap(x0, x1);
+            iswap(y0, y1);
+        }
+        if(y0 > y2)
+        {
+            iswap(x0, x2);
+            iswap(y0, y2);
+        }
+        if(y1 > y2)
+        {
+            iswap(x1, x2);
+            iswap(y1, y2);
+        }
+        int32_t s_x1 = int32_t(x0) << 16;
+        int32_t s_x2 = s_x1;
+        // Compute fixed-point edge slopes
+        int32_t s_dx1 = (int32_t(x1 - x0) << 16) / (y1 - y0);
+        int32_t s_dx2 = (int32_t(x2 - x0) << 16) / (y2 - y0);
+        startCommand();
+
+        uint8_t nbuf[8] = {0x21, x0, y0, x1, y1, b, g, r}; // Only seems to need this for this edge
+        writeBuffer(nbuf, 8);
+
+        uint8_t cbuf[13] = {0x26, 0, 0x22, 0, 0, 0, 0, b, g, r, b, g, r};
+        for(int16_t y = y0; y < y1; y++)
+        {
+            cbuf[4] = cbuf[6] = y;
+            if(s_x1 > s_x2) iswap(s_x1, s_x2);
+            cbuf[3] = s_x1 >> 16;
+            cbuf[5] = s_x2 >> 16;
+            writeBuffer(cbuf, 13);
+            s_x1 += s_dx1;
+            s_x2 += s_dx2;
+        }
+        s_dx1 = (int32_t(x2 - x1) << 16) / (y2 - y1);
+        for(int y = y1; y <= y2; y++)
+        {
+            cbuf[4] = cbuf[6] = y;
+            if(s_x1 > s_x2) iswap(s_x1, s_x2);
+            cbuf[3] = s_x1 >> 16;
+            cbuf[5] = s_x2 >> 16;
+            writeBuffer(cbuf, 13);
+            s_x1 += s_dx1;
+            s_x2 += s_dx2;
+        }
+        endTransfer();
+    }
+    else
+    {
+        // Just draw the outline
+        startCommand();
+        uint8_t cbuf[8] = {0x21, x0, y0, x1, y1, b, g, r};
+        writeBuffer(cbuf, 8);
+        cbuf[1] = x1;
+        cbuf[2] = y1;
+        cbuf[3] = x2;
+        cbuf[4] = y2;
+        writeBuffer(cbuf, 8);
+        cbuf[1] = x2;
+        cbuf[2] = y2;
+        cbuf[3] = x0;
+        cbuf[4] = y0;
+        writeBuffer(cbuf, 8);
+        endTransfer();
+    }
+}
+
+void TinyScreen::drawTri(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t f, uint16_t color)
+{
+    uint16_t r,g,b;
+    if(_bitDepth){
+        r=(color)&0x1F;//five bits
+        g=(color>>5)&0x3F;//six bits
+        b=(color>>11)&0x1F;//five bits
+        r=r<<1;//shift to fill six bits
+        g=g<<0;//shift to fill six bits
+        b=b<<1;//shift to fill six bits
+    }else{
+        r=(color)&0x03;//two bits
+        g=(color>>2)&0x07;//three bits
+        b=(color>>5)&0x07;//three bits
+        r|=(r<<4)|(r<<2);//copy to fill six bits
+        g|=g<<3;//copy to fill six bits
+        b|=b<<3;//copy to fill six bits
+    }
+    drawTri(x0, y0, x1, y1, x2, y2, f, r, g, b);
+}
+
 /*
 Pixel manipulation
 drawPixel(x,y,color);//set pixel (x,y) to specified color. This is slow because we need to send commands setting the x and y, then send the pixel data.
@@ -363,12 +589,18 @@ void TinyScreen::drawPixel(uint8_t x, uint8_t y, uint16_t color)
 void TinyScreen::writePixel(uint16_t color) {
   startData();
   if(_bitDepth)
-    TSSPI->transfer(color>>8);
-  TSSPI->transfer(color);
+  {
+    //TSSPI->transfer(color>>8);
+    TS_SPI_SET_DATA_REG(color>>8);
+    TS_SPI_SEND_WAIT();
+  }
+  //TSSPI->transfer(color);
+  TS_SPI_SET_DATA_REG(color);
+  TS_SPI_SEND_WAIT();
   endTransfer();
 }
 
-void TinyScreen::writeBuffer(uint8_t *buffer,int count) {
+void TinyScreen::writeBuffer(const uint8_t *buffer,int count) {
   uint8_t temp;
   TS_SPI_SET_DATA_REG(buffer[0]);
   for(int j=1;j<count;j++){
@@ -495,8 +727,11 @@ void TinyScreen::begin(void) {
   0x78, 0x8C, 0x64, 0xBB, 0x3A, 0xBE, 0x3E, 0x81, 0x91, 0x82, 0x50, 0x83, 0x7D};
   off();
   startCommand();
+  /*
   for(uint8_t i=0;i<32;i++)
     TSSPI->transfer(init[i]);
+    */
+  writeBuffer(init, 32);
   endTransfer();
   //use libarary functions for remaining init
   setBrightness(5);
