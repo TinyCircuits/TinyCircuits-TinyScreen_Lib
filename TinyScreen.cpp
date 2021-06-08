@@ -549,6 +549,9 @@ void TinyScreen::drawTri(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t
         writeBuffer(cbuf, 8);
         endTransfer();
     }
+#if TS_USE_DELAY
+  delayMicroseconds(400);
+#endif
 }
 
 void TinyScreen::drawTri(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t f, uint16_t color)
