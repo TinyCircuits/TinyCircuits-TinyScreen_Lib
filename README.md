@@ -42,10 +42,16 @@ An example demonstrating and explaining most of the library functions is include
 ### Built-In Drawing Commands
 
 * **void drawPixel(uint8_t, uint8_t, uint16_t)**
-* **void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)**
-* **void drawLine(uint8_t, uint8_t, uint8_t, uint8_t, uint16_t)**
-* **void drawRect(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)**
-* **void drawRect(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint16_t)**
+* **void drawLine(int16_t, int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t)**
+* **void drawLine(int16_t, int16_t, int16_t, int16_t, uint16_t)**
+* **void drawRect(int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)**
+* **void drawRect(int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint16_t)**
+* **void drawHLine(int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t)**
+* **void drawHLine(int16_t, int16_t, int16_t, uint16_t)**
+* **void drawVLine(int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t)**
+* **void drawVLine(int16_t, int16_t, int16_t, uint16_t)**
+* **void drawTri(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t, uint8_t, uint8_t, uint8_t, uint8_t)**
+* **void drawTri(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t, uint8_t, uint16_t)**
 * **void clearWindow(uint8_t, uint8_t, uint8_t, uint8_t)**
 * **void clearScreen(void)**
 
